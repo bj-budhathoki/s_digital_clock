@@ -22,7 +22,7 @@
   onMount(async () => {
     // "http://10.10.99.200:8080/client/app/get-data/?appdata_id=0712e6fd-1d99-4962-9701-c0d90797f863"
     let res = await fetch(
-      "https://staging.followmedia.tk/client/app/get-data/?appdata_id=2aed10ba-351e-40f4-8520-99f0cc376ace"
+      "https://staging.followmedia.tk/client/app/get-data/?appdata_id=09d38a3f-daa9-4d5d-9372-7b4b9103f2ce"
     );
     let data = await res.json();
     dateFormat = data.appData.dateFormat;
@@ -81,14 +81,16 @@
       z-index: 2;
       & > .day > p {
         text-transform: capitalize;
-        color: #e6e3e3;
-        font-size: 2.3rem;
+        color: #3d3d3d;
+        font-size: 8rem;
         font-weight: normal;
         align-self: center;
+        opacity: 0.3;
       }
       & > .day > .light-on {
         color: #ffffff;
         font-weight: 900;
+        opacity: 1;
         //   font-size: 3rem;
       }
     }
@@ -97,7 +99,7 @@
     }
     .clock {
       color: #fff;
-      font-size: 25rem;
+      font-size: 40rem;
       & > .numbers,
       & > .colon {
         p {
@@ -110,7 +112,7 @@
       }
     }
     .today-date {
-      font-size: 8rem;
+      font-size: 10rem;
       color: #e6e3e3;
     }
   }
@@ -119,14 +121,22 @@
     main {
       background-repeat: no-repeat;
       &::after {
-        background: rgba(12, 10, 10, 0.7);
+        background: rgba(12, 10, 10, 0.5);
         position: absolute;
         top: 0;
         left: 0;
       }
       .days {
         & > .day > p {
-          font-size: 2rem;
+          font-size: 3rem;
+          color: #3d3d3d;
+        }
+      }
+      .clock {
+        color: #fff;
+        font-size: 30rem;
+        & > .am-pm {
+          font-size: 5rem;
         }
       }
     }
@@ -143,6 +153,7 @@
       .days {
         & > .day > p {
           font-size: 1.6rem;
+          color: #747474;
         }
       }
       .clock {
