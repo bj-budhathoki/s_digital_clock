@@ -54,7 +54,7 @@ const fallbackCache = (req) => {
         caches.open(`static-${version}`)
             .then(cache => cache.put(req, networkRes));
         // Return Clone of Network Response
-        return networkRes.clone();
+        return networkRes.clone()
     })
         // Try cache
         .catch(err => caches.match(req));
@@ -62,14 +62,16 @@ const fallbackCache = (req) => {
 
 // SW Fetch
 self.addEventListener('fetch', e => {
-    console.log('sw :: fetching..', e.request)
-    // App shell
+    if (!(e.request.url.indexOf('http') === 0)) {
+        return;
+    }
     if (e.request.url.match(location.origin)) {
         e.respondWith(staticCache(e.request));
     }
-    else if (e.request.url.match("https://cdn.pixabay.com/photo/2012/08/27/14/19/evening-55067_960_720.png") || e.request.url.match("http://localhost:5000/data.json")) {
+    else {
         e.respondWith(fallbackCache(e.request));
     }
+
 });
 // self.addEventListener('message', e => {
 //     console.log('message event fire ::', e)

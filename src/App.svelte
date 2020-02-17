@@ -20,18 +20,21 @@
   let calender;
   let response;
   onMount(async () => {
-    let res = await fetch("/data.json");
+    // "http://10.10.99.200:8080/client/app/get-data/?appdata_id=0712e6fd-1d99-4962-9701-c0d90797f863"
+    let res = await fetch(
+      "http://10.10.99.200:8080/client/app/get-data/?appdata_id=0712e6fd-1d99-4962-9701-c0d90797f863"
+    );
     let data = await res.json();
-    dateFormat = data.dateFormat;
-    response = data;
+    dateFormat = data.appData.dateFormat;
+    response = data.appData;
   });
 
   function setDate() {
     if (response) {
       let currentDate = new Date()
-        .toLocaleString(response.data.code, {
-          timeZone: response.data.timeZone,
-          hour12: response.timeFormat === "24 hours" ? true : false
+        .toLocaleString({
+          timeZone: response.timeZone,
+          hour12: response.timeFormat === "12 Hours" ? true : false
         })
         .split(" ");
       let currentTime = currentDate[1].split(":");
@@ -116,7 +119,10 @@
     main {
       background-repeat: no-repeat;
       &::after {
-        background: red;
+        background: rgba(12, 10, 10, 0.7);
+        position: absolute;
+        top: 0;
+        left: 0;
       }
       .days {
         & > .day > p {
@@ -129,7 +135,10 @@
     main {
       background-repeat: no-repeat;
       &::after {
-        background: rgba(12, 10, 10, 0.5);
+        background: rgba(12, 10, 10, 0.7);
+        position: absolute;
+        top: 0;
+        left: 0;
       }
       .days {
         & > .day > p {
@@ -185,7 +194,7 @@
     main {
       background-repeat: no-repeat;
       &::after {
-        background: rgba(12, 10, 10, 0.5);
+        // background: rgba(12, 10, 10, 0.5);
       }
       .days {
         grid-column-gap: 0.2rem;
@@ -236,7 +245,9 @@
   }
 </style>
 
-<main style="background-image: url('{response && response.background}')">
+<main
+  style="background-image:url('{response && response.background ? response.background : 'https://cdn.pixabay.com/photo/2018/05/30/00/24/thunderstorm-3440450_960_720.jpg'}')
+  ">
   <!-- DAY OF THE WEEK -->
   {#if response}
     <div class="days" transition:fade>
