@@ -22,7 +22,7 @@
   onMount(async () => {
     // "http://10.10.99.200:8080/client/app/get-data/?appdata_id=0712e6fd-1d99-4962-9701-c0d90797f863"
     let res = await fetch(
-      "http://10.10.99.200:8080/client/app/get-data/?appdata_id=0712e6fd-1d99-4962-9701-c0d90797f863"
+      "https://staging.followmedia.tk/client/app/get-data/?appdata_id=2aed10ba-351e-40f4-8520-99f0cc376ace"
     );
     let data = await res.json();
     dateFormat = data.appData.dateFormat;
