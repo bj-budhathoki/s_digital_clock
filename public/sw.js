@@ -67,10 +67,10 @@ self.addEventListener('fetch', e => {
     }
     if (e.request.url.match(location.origin)) {
         e.respondWith(staticCache(e.request));
-    }
-    else {
+    } else {
         e.respondWith(fallbackCache(e.request));
     }
+
 
 });
 // self.addEventListener('message', e => {

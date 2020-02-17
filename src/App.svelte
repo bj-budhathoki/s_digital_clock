@@ -19,30 +19,28 @@
   let todayDate;
   let calender;
   let response;
+  let dow;
   onMount(async () => {
-    // "http://10.10.99.200:8080/client/app/get-data/?appdata_id=0712e6fd-1d99-4962-9701-c0d90797f863"
     let res = await fetch(
       "https://staging.followmedia.tk/client/app/get-data/?appdata_id=09d38a3f-daa9-4d5d-9372-7b4b9103f2ce"
     );
+
     let data = await res.json();
-    dateFormat = data.appData.dateFormat;
-    response = data.appData;
+    dateFormat = data.appData ? data.appData.dateFormat : "YYYY-MM-DD";
+    response = data.appData || null;
   });
 
   function setDate() {
     if (response) {
-      let currentDate = new Date()
-        .toLocaleString({
-          timeZone: response.timeZone,
-          hour12: response.timeFormat === "12 Hours" ? true : false
-        })
-        .split(" ");
-      let currentTime = currentDate[1].split(":");
-      hours = `0${currentTime[0]}`.slice(-2);
-      minutes = `0${currentTime[1]}`.slice(-2);
-      seconds = `0${currentTime[2]}`.slice(-2);
-      todayDate = currentDate[0];
-      ampm = currentDate[2];
+      let today = moment().utcOffset("UTC+5:45");
+      todayDate = today.format(response ? response.dateFormat : "YYYY-MM-DD");
+      hours = today.format(
+        response && response.timeFormat === "12 Hours" ? "hh" : "HH"
+      );
+      minutes = today.format("mm");
+      seconds = today.format("ss");
+      ampm = today.format("A");
+      dow = today.day();
     }
   }
   setInterval(setDate, 1000);
@@ -264,9 +262,7 @@
     <div class="days" transition:fade>
       {#each weekDay as day, i}
         <div class="day" transition:fade={{ duration: 800 * i + 1 }}>
-          <p class={day} class:light-on={weekDay[new Date().getDay()] === day}>
-            {day}
-          </p>
+          <p class={day} class:light-on={weekDay[dow] === day}>{day}</p>
         </div>
       {/each}
     </div>
@@ -283,7 +279,6 @@
       <div class="numbers">
         <p class="minutes">{minutes ? minutes : '00'}</p>
       </div>
-
       <div class="colon">
         <p>:</p>
       </div>
@@ -296,8 +291,6 @@
       </div>
 
     </div>
-    <div class="today-date" transition:fade={{ delay: 1100 }}>
-      {moment().format(dateFormat ? dateFormat : 'YYYY/MM/DD')}
-    </div>
+    <div class="today-date" transition:fade={{ delay: 1100 }}>{todayDate}</div>
   {/if}
 </main>
