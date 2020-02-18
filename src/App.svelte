@@ -2,15 +2,6 @@
   import { onMount } from "svelte";
   import { fade } from "svelte/transition";
   import moment from "moment";
-  let weekDay = [
-    "sunday",
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday"
-  ];
   let hours;
   let minutes;
   let seconds;
@@ -19,7 +10,7 @@
   let todayDate;
   let calender;
   let response;
-  let dow;
+  let weekDay;
   let isDay = true;
   let isNight = false;
   onMount(async () => {
@@ -42,7 +33,7 @@
       minutes = today.format("mm");
       seconds = today.format("ss");
       ampm = today.format("A");
-      dow = today.day();
+      weekDay = today.format("dddd");
     }
     getGreetingTime(moment());
   }
@@ -101,29 +92,7 @@
       left: 0;
       z-index: -1;
     }
-    .days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      grid-column-gap: 3rem;
-      justify-content: center;
-      align-items: center;
-      z-index: 2;
-      & > .day > p {
-        text-transform: capitalize;
-        color: #3d3d3d;
-        font-size: 8rem;
-        font-weight: normal;
-        align-self: center;
-        opacity: 0.1;
-      }
-      & > .day > .light-on {
-        color: #ffffff;
-        font-weight: 900;
-        opacity: 1;
-        margin: 0;
-        //   font-size: 3rem;
-      }
-    }
+
     .clock {
       display: flex;
     }
@@ -156,14 +125,6 @@
         top: 0;
         left: 0;
       }
-      .days {
-        & > .day > p {
-          font-size: 3rem;
-        }
-        & > .day > .light-on {
-          font-weight: 900;
-        }
-      }
       .clock {
         color: #fff;
         font-size: 30rem;
@@ -184,12 +145,6 @@
         position: absolute;
         top: 0;
         left: 0;
-      }
-      .days {
-        & > .day > p {
-          font-size: 2rem;
-          color: #747474;
-        }
       }
       .clock {
         color: #fff;
@@ -214,11 +169,6 @@
       &::after {
         background: rgba(12, 10, 10, 0.5);
       }
-      .days {
-        & > .day > p {
-          font-size: 1.3rem;
-        }
-      }
       .clock {
         color: #fff;
         font-size: 8rem;
@@ -240,13 +190,7 @@
     main {
       background-repeat: no-repeat;
       &::after {
-        // background: rgba(12, 10, 10, 0.5);
-      }
-      .days {
-        grid-column-gap: 0.2rem;
-        & > .day > p {
-          font-size: 0.7rem;
-        }
+        background: rgba(12, 10, 10, 0.5);
       }
       .clock {
         color: #fff;
@@ -271,12 +215,6 @@
       &::after {
         background: rgba(12, 10, 10, 0.5);
       }
-      .days {
-        background: red;
-        & > .day > p {
-          font-size: 1rem;
-        }
-      }
       .clock {
         font-size: 1rem;
         & > .numbers,
@@ -296,13 +234,6 @@
   ">
   <!-- DAY OF THE WEEK -->
   {#if response}
-    <div class="days" transition:fade>
-      {#each weekDay as day, i}
-        <div class="day" transition:fade={{ duration: 800 * i + 1 }}>
-          <p class={day} class:light-on={weekDay[dow] === day}>{day}</p>
-        </div>
-      {/each}
-    </div>
     <!-- CLOCK -->
     <div class="clock" transition:fade={{ delay: 1000 }}>
       <!-- HOUR -->
@@ -328,6 +259,8 @@
       </div>
 
     </div>
-    <div class="today-date" transition:fade={{ delay: 1100 }}>{todayDate}</div>
+    <div class="today-date" transition:fade={{ delay: 1100 }}>
+      {weekDay} , &nbsp;{todayDate}
+    </div>
   {/if}
 </main>
