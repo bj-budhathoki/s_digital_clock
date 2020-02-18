@@ -15,7 +15,7 @@
   let isNight = false;
   onMount(async () => {
     let res = await fetch(
-      "https://staging.followmedia.tk/client/app/get-data/?appdata_id=09d38a3f-daa9-4d5d-9372-7b4b9103f2ce"
+      "https://staging.followmedia.tk/client/app/get-data/?appdata_id=eafbecdc-70f0-490c-94a9-95043d102bb0"
     );
 
     let data = await res.json();

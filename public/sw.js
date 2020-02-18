@@ -26,7 +26,7 @@ self.addEventListener('activate', e => {
         keys.forEach(key => {
             if (key !== `static-${version}`) {
                 // Clean static cache
-   return caches.delete(key);
+                return caches.delete(key);
             }
         });
     })
@@ -65,13 +65,13 @@ const fallbackCache = (req) => {
 
 // SW Fetch
 self.addEventListener('fetch', e => {
-     if (!(e.request.url.indexOf('http') === 0)) {
+    if (!(e.request.url.indexOf('http') === 0)) {
         return;
     }
     if (e.request.url.match(location.origin)) {
         e.respondWith(staticCache(e.request));
     }
-    else if (e.request.url.match('staging.followmedia.tk/client/app/get-data')) {
+    else if (e.request.url.match('staging.followmedia.tk/client/app/get-data/')) {
         e.respondWith(fallbackCache(e.request));
     }
 
