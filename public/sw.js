@@ -7,6 +7,8 @@ const appAssets = [
     'global.css',
     './build/bundle.css',
     './build/bundle.js',
+    './img/bg-day.jpg',
+    './img/bg-night.jpg',
 ]
 
 // SW Install

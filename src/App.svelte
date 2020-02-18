@@ -20,6 +20,8 @@
   let calender;
   let response;
   let dow;
+  let isDay = true;
+  let isNight = false;
   onMount(async () => {
     let res = await fetch(
       "https://staging.followmedia.tk/client/app/get-data/?appdata_id=09d38a3f-daa9-4d5d-9372-7b4b9103f2ce"
@@ -32,7 +34,7 @@
 
   function setDate() {
     if (response) {
-      let today = moment().utcOffset("UTC+5:45");
+      let today = moment().utcOffset(response.timeZone || "utc+5:45");
       todayDate = today.format(response ? response.dateFormat : "YYYY-MM-DD");
       hours = today.format(
         response && response.timeFormat === "12 Hours" ? "hh" : "HH"
@@ -42,7 +44,36 @@
       ampm = today.format("A");
       dow = today.day();
     }
+    getGreetingTime(moment());
   }
+
+  //greeting
+  function getGreetingTime(currentTime) {
+    if (!currentTime || !currentTime.isValid()) {
+      isDay = true;
+      isNight = false;
+      return;
+    }
+    const splitAfternoon = 12;
+    const splitEvening = 17;
+    const currentHour = parseFloat(currentTime.format("HH"));
+    if (currentHour >= splitAfternoon && currentHour <= splitEvening) {
+      // Between 12 PM and 5PM
+      isDay = true;
+      isNight = false;
+      return "Good afternoon";
+    } else if (currentHour >= splitEvening) {
+      // Between 5PM and Midnight
+      isDay = false;
+      isNight = true;
+      return "Good evening";
+    }
+    // Between dawn and noon
+    isDay = true;
+    isNight = false;
+    return "Good morning";
+  }
+
   setInterval(setDate, 1000);
 </script>
 
@@ -73,7 +104,7 @@
     .days {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      grid-column-gap: 1rem;
+      grid-column-gap: 3rem;
       justify-content: center;
       align-items: center;
       z-index: 2;
@@ -83,12 +114,13 @@
         font-size: 8rem;
         font-weight: normal;
         align-self: center;
-        opacity: 0.3;
+        opacity: 0.1;
       }
       & > .day > .light-on {
         color: #ffffff;
         font-weight: 900;
         opacity: 1;
+        margin: 0;
         //   font-size: 3rem;
       }
     }
@@ -127,7 +159,9 @@
       .days {
         & > .day > p {
           font-size: 3rem;
-          color: #3d3d3d;
+        }
+        & > .day > .light-on {
+          font-weight: 900;
         }
       }
       .clock {
@@ -136,6 +170,9 @@
         & > .am-pm {
           font-size: 5rem;
         }
+      }
+      .today-date {
+        font-size: 10rem;
       }
     }
   }
@@ -150,28 +187,28 @@
       }
       .days {
         & > .day > p {
-          font-size: 1.6rem;
+          font-size: 2rem;
           color: #747474;
         }
       }
       .clock {
         color: #fff;
-        font-size: 12rem;
+        font-size: 25rem;
         & > .numbers,
         & > .colon {
           p {
           }
         }
         & > .am-pm {
-          font-size: 2rem;
+          font-size: 5rem;
         }
       }
       .today-date {
-        font-size: 2.5rem;
+        font-size: 3rem;
       }
     }
   }
-  @media screen and (max-width: 1280px) {
+  @media screen and (max-width: 1580px) {
     main {
       background-repeat: no-repeat;
       &::after {
@@ -255,7 +292,7 @@
 </style>
 
 <main
-  style="background-image:url('{response && response.background ? response.background : 'https://cdn.pixabay.com/photo/2018/05/30/00/24/thunderstorm-3440450_960_720.jpg'}')
+  style="background-image:url('{response && response.background ? response.background : isDay ? '/img/bg-day.jpg' : '/img/bg-night.jpg'}')
   ">
   <!-- DAY OF THE WEEK -->
   {#if response}
