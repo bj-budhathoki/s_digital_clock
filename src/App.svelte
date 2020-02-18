@@ -25,7 +25,7 @@
 
   function setDate() {
     if (response) {
-      let today = moment().utcOffset(response.timeZone || "utc+5:45");
+      let today = moment().utcOffset(response.timeZone || "+05:45");
       todayDate = today.format(response ? response.dateFormat : "YYYY-MM-DD");
       hours = today.format(
         response && response.timeFormat === "12 Hours" ? "hh" : "HH"
