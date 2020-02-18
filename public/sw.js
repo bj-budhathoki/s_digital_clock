@@ -1,5 +1,5 @@
 // SW Version
-const version = 'd_1.1';
+const cacheName = 'static_d_1.1';
 // Static Cache 
 const appAssets = [
     'index.html',
@@ -10,70 +10,38 @@ const appAssets = [
     './img/bg-day.jpg',
     './img/bg-night.jpg',
 ]
-
-// SW Install
+// install SW
 self.addEventListener('install', e => {
-    console.log('SW:: installed')
-    e.waitUntil(
-        caches.open(`static-${version}`).then(cache => cache.addAll(appAssets))
+    e.waitUntil(caches.open(cacheName).then(cache => {
+        cache.addAll(appAssets)
+    }).then(() => self.skipWaiting())
     )
 })
-// SW Activate
-self.addEventListener('activate', e => {
-    console.log('SW::activeted')
-    // Clean static cache
-    let cleaned = caches.keys().then(keys => {
-        keys.forEach(key => {
-            if (key !== `static-${version}`) {
-                // Clean static cache
-                return caches.delete(key);
-            }
-        });
-    })
-    e.waitUntil(cleaned);
-})
 
-//static caches strategies-caches with network fallback
-const staticCache = (req, cacheName = `static-${version}`) => {
-    return caches.match(req).then(cachedRes => {
-        //return cached response if found
-        if (cachedRes) return cachedRes;
-        //fall back to newtwork
-        return fetch(req).then(networkRes => {
-            //update caches with new response
-            caches.open(cacheName).then(cache => cache.put(req, networkRes));
-            // Return Clone of Network Response
-            return networkRes.clone();
+// activate event
+self.addEventListener('activate', evt => {
+    evt.waitUntil(
+        caches.keys().then(keys => {
+            return Promise.all(keys
+                .filter(key => key !== cacheName)
+                .map(key => caches.delete(key))
+            );
         })
-    })
-}
-// Network with Cache Fallback
-const fallbackCache = (req) => {
-    // Try Network
-    return fetch(req).then(networkRes => {
-        // Check res is OK, else go to cache
-        // if (!networkRes.ok) throw 'Fetch Error';
-        // Update cache
-        caches.open(`static-${version}`)
-            .then(cache => cache.put(req, networkRes));
-        // Return Clone of Network Response
-        return networkRes.clone()
-    })
-        // Try cache
-        .catch(err => caches.match(req));
-};
+    );
+});
 
-// SW Fetch
+//fething
 self.addEventListener('fetch', e => {
     if (!(e.request.url.indexOf('http') === 0)) {
         return;
     }
-    if (e.request.url.match(location.origin)) {
-        e.respondWith(staticCache(e.request));
-    }
-    else if (e.request.url.match('staging.followmedia.tk/client/app/get-data/')) {
-        e.respondWith(fallbackCache(e.request));
-    }
-
-});
-
+    e.respondWith(
+        fetch(e.request).then((res) => {
+            const resClone = res.clone()
+            caches.open(cacheName).then(cache => {
+                cache.put(e.request, resClone)
+            })
+            return res;
+        }).catch(err => caches.match(e.request).then(res => res))
+    )
+})
